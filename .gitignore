@@ -1,0 +1,66 @@
+# ── Secrets ───────────────────────────────────────────────────────────────
+# Contains DATABASE_URL (Supabase password). Never commit this.
+.env
+.env.*
+!.env.example
+
+# ── Model artifacts ───────────────────────────────────────────────────────
+# Trained pipeline — regenerable via machine_learning/; too large to track.
+model/*.joblib
+model/*.pkl
+model/*.h5
+model/*.pt
+
+# ── Data ──────────────────────────────────────────────────────────────────
+data/clean/*
+!data/clean/.gitkeep
+
+# ── Python / venv ─────────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+.python-version
+
+# ── Testing / linting ─────────────────────────────────────────────────────
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+
+# ── Reflex frontend ───────────────────────────────────────────────────────
+.reflex/
+.web/
+frontend/.web/
+frontend/.states/
+*.db
+*.sqlite3
+
+# ── Notebooks ─────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Jupyter / IDE ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*~
+
+# ── OS noise ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs / temp ───────────────────────────────────────────────────────────
+*.log
+*.tmp

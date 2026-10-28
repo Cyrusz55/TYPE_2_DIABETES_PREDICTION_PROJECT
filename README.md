@@ -69,10 +69,6 @@ The target column is `Type-2 Diabetic`. The target counts are 225 rows labelled 
 
 The saved model is `model/best_pipeline_XGBoost.joblib`. Its pipeline selects the nine numeric fields, imputes numeric missing values with the median, standardises numeric values, applies SMOTETomek sampling, and uses an XGBoost classifier.
 
-The repository contains one saved model and no recorded results for other candidate models. Therefore, a comparison with other models cannot be reported. TODO: add the other trained models and their evaluation results if a model comparison is required.
-
-![Model comparison](docs/images/model_comparison.png)
-
 ## Results
 
 The evaluation uses a stratified test split with 20 percent of the rows and random state 42.
@@ -137,11 +133,17 @@ curl.exe -X POST http://127.0.0.1:8001/api/v1/predict -H "Content-Type: applicat
 
 The single page form accepts the nine measurements and sends them to the prediction endpoint. The result card displays the predicted class and the model confidence. The page supports light and dark themes. Client side validation reports invalid or missing values before a request is sent.
 
-![Empty interface](docs/images/ui_empty.png)
+The empty form
 
-![Light result interface](docs/images/ui_result_light.png)
+![The empty form](docs/images/ui_empty.png)
 
-![Validation error interface](docs/images/ui_error.png)
+The validation error for an invalid value
+
+![A validation error for an invalid value](docs/images/ui_error.png)
+
+The successful prediction
+
+![A successful prediction](docs/images/ui_result_light.png)
 
 ## Run it locally
 
@@ -240,3 +242,6 @@ TYPE_2_DIABETES_PREDICTION
 Licence: TODO:
 
 Author: Cyrus Ndung'u, GitHub [Cyrusz55](https://github.com/Cyrusz55), portfolio [cyrusz55.github.io](https://cyrusz55.github.io).
+
+
+

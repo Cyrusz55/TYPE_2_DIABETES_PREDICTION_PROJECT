@@ -92,17 +92,7 @@ def main() -> None:
     fig.tight_layout()
     save(fig, "feature_distributions.png")
 
-    # Only one trained model is present in the repository; its measured test AUC
-    # is shown without inventing results for models that were not saved or tried.
     auc = roc_auc_score(y_test, y_proba)
-    fig, ax = plt.subplots(figsize=(6, 4))
-    bar = ax.bar(["XGBoost"], [auc], color=COLORS["green"])
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Test ROC-AUC")
-    ax.set_title("Model comparison")
-    ax.bar_label(bar, labels=[f"{auc:.3f}"], padding=3)
-    ax.spines[["top", "right"]].set_visible(False)
-    save(fig, "model_comparison.png")
 
     importances = model.named_steps["model"].feature_importances_
     importance = pd.Series(importances, index=FEATURES).sort_values()

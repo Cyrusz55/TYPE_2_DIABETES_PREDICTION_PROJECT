@@ -1,5 +1,5 @@
 """Capture README screenshots and an animated form demo with Playwright."""
-
+import io
 from pathlib import Path
 import subprocess
 import sys
@@ -51,9 +51,9 @@ def main() -> None:
             page.screenshot(path=str(OUTPUT_DIR / "ui_empty.png"), full_page=True)
             for field, value in SAMPLE.items():
                 page.locator(f"#{field}").fill(value)
-                frames.append(Image.open(page.screenshot()).convert("RGB"))
+                frames.append(Image.open(io.BytesIO(page.screenshot())).convert("RGB"))
             page.screenshot(path=str(OUTPUT_DIR / "ui_result_light.png"), full_page=True)
-            frames.append(Image.open(page.screenshot()).convert("RGB"))
+            frames.append(Image.open(io.BytesIO(page.screenshot())).convert("RGB"))
 
             page.locator("#themeToggle").click()
             page.wait_for_timeout(250)
@@ -62,7 +62,7 @@ def main() -> None:
             page.locator("#predictBtn").click()
             page.wait_for_timeout(250)
             page.screenshot(path=str(OUTPUT_DIR / "ui_error.png"), full_page=True)
-            frames.append(Image.open(page.screenshot()).convert("RGB"))
+            frames.append(Image.open(io.BytesIO(page.screenshot())).convert("RGB"))
 
             frames[0].save(
                 OUTPUT_DIR / "demo.gif",

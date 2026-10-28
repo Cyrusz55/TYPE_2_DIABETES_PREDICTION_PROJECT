@@ -237,6 +237,6 @@ TYPE_2_DIABETES_PREDICTION
 
 ## Licence and author
 
-Licence: TODO: add the project licence.
+Licence: TODO:
 
 Author: Cyrus Ndung'u, GitHub [Cyrusz55](https://github.com/Cyrusz55), portfolio [cyrusz55.github.io](https://cyrusz55.github.io).

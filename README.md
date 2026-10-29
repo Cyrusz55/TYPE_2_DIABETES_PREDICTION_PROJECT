@@ -2,12 +2,9 @@
 
 An educational FastAPI application that estimates type 2 diabetes status from nine numeric health measurements.
 
-[![Python version](https://img.shields.io/badge/Python-TODO-blue)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688)](#) [![scikit learn](https://img.shields.io/badge/scikit--learn-1.9.0-f7931e)](#) [![Licence](https://img.shields.io/badge/licence-TODO-lightgrey)](#) [![Deploy status](https://img.shields.io/badge/deploy-TODO-lightgrey)](#) [![CI](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions/workflows/ci.yml/badge.svg)](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions)
+[![Python version](https://img.shields.io/badge/Python-TODO-blue)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688)](#) [![scikit learn](https://img.shields.io/badge/scikit--learn-1.9.0-f7931e)](#) [![Licence](https://img.shields.io/badge/licence-TODO-lightgrey)](#) [![CI](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions/workflows/ci.yml/badge.svg)](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions) [![Deploy](https://img.shields.io/badge/deploy-workflow-blue)](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions)
 
-Live demo: [LIVE_DEMO_URL_TODO](LIVE_DEMO_URL_TODO)
-
-<!-- Replace LIVE_DEMO_URL_TODO with the deployed application URL. -->
-<!-- TODO: generate the referenced image files in docs/images before publishing. -->
+Live demo: [Type 2 Diabetes Prediction](https://type-2-diabetes-prediction-project.onrender.com)
 
 ![Application demo](docs/images/demo.gif)
 
@@ -27,7 +24,7 @@ flowchart LR
     FastAPI --> Model[Model from local file or Hugging Face]
     Model --> FastAPI
     FastAPI --> Browser
-    Hosting[Local host or TODO deployed host] --> FastAPI
+    Hosting[Docker container on Render] --> FastAPI
 ```
 
 ```mermaid
@@ -175,6 +172,32 @@ python -m uvicorn apps.main:app --host 127.0.0.1 --port 8001
 ```
 
 Open `http://127.0.0.1:8001/` in a browser.
+
+## Run with Docker
+
+Build the image:
+
+```powershell
+docker build -t type-2-diabetes-prediction .
+```
+
+Run the container:
+
+```powershell
+docker run --rm -p 8000:8000 type-2-diabetes-prediction
+```
+
+Run with Docker Compose:
+
+```powershell
+docker compose up
+```
+
+The model is included in the image, so the first start does not need internet access.
+
+## Deployment
+
+Push to master, run the CI tests, build the image, push the image to GHCR, trigger the Render deploy, then run the live smoke test.
 
 Install the separate figure and capture dependencies:
 

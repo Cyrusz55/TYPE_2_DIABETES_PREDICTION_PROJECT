@@ -16,6 +16,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -43,3 +45,89 @@ jobs:
 
       - name: Run tests
         run: pytest
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: type-2-diabetes-prediction:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    # Set Auto Deploy to off in Render so the service does not deploy twice.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs:
+      - test
+      - docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set image tag
+        id: image
+        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ steps.image.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trigger Render deployment
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl --fail --silent --output /dev/null --request POST "$RENDER_DEPLOY_HOOK_URL"
+
+      - name: Smoke test live service
+        env:
+          RENDER_SERVICE_URL: ${{ vars.RENDER_SERVICE_URL }}
+        run: |
+          health_url="${RENDER_SERVICE_URL%/}/api/v1/health"
+          for attempt in $(seq 1 32); do
+            response="$(curl --silent --show-error --location --write-out '\n%{http_code}' "$health_url" || true)"
+            status="${response##*$'\n'}"
+            body="${response%$'\n'*}"
+            if [ "$status" = "200" ] && echo "$body" | jq --exit-status '.model_loaded == true' >/dev/null; then
+              echo "Live service is healthy and the model is loaded."
+              exit 0
+            fi
+            if [ "$attempt" -lt 32 ]; then
+              sleep 15
+            fi
+          done
+          echo "Live service did not become healthy with the model loaded within 8 minutes." >&2
+          exit 1

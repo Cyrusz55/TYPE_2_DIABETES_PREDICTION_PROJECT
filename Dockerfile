@@ -23,6 +23,6 @@ RUN useradd --create-home --uid 10001 appuser && \
 USER appuser
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD-SHELL python -c "import json, os, urllib.request; port = os.environ.get('PORT', '8000'); data = json.load(urllib.request.urlopen('http://127.0.0.1:' + port + '/api/v1/health')); raise SystemExit(0 if data.get('model_loaded') is True else 1)"
+    CMD python -c "import json, os, urllib.request; port = os.environ.get('PORT', '8000'); data = json.load(urllib.request.urlopen('http://127.0.0.1:' + port + '/api/v1/health')); raise SystemExit(0 if data.get('model_loaded') is True else 1)"
 
 CMD ["sh", "-c", "exec uvicorn apps.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

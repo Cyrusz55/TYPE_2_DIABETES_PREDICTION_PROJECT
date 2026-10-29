@@ -2,7 +2,7 @@
 
 An educational FastAPI application that estimates type 2 diabetes status from nine numeric health measurements.
 
-[![Python version](https://img.shields.io/badge/Python-TODO-blue)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688)](#) [![scikit learn](https://img.shields.io/badge/scikit--learn-1.9.0-f7931e)](#) [![Licence](https://img.shields.io/badge/licence-TODO-lightgrey)](#) [![Deploy status](https://img.shields.io/badge/deploy-TODO-lightgrey)](#)
+[![Python version](https://img.shields.io/badge/Python-TODO-blue)](#) [![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688)](#) [![scikit learn](https://img.shields.io/badge/scikit--learn-1.9.0-f7931e)](#) [![Licence](https://img.shields.io/badge/licence-TODO-lightgrey)](#) [![Deploy status](https://img.shields.io/badge/deploy-TODO-lightgrey)](#) [![CI](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions/workflows/ci.yml/badge.svg)](https://github.com/Cyrusz55/TYPE_2_DIABETES_PREDICTION_PROJECT/actions)
 
 Live demo: [LIVE_DEMO_URL_TODO](LIVE_DEMO_URL_TODO)
 
@@ -24,7 +24,7 @@ The tool estimates whether a patient record is labelled as type 2 diabetic in th
 ```mermaid
 flowchart LR
     Browser[Browser form] --> FastAPI[FastAPI application]
-    FastAPI --> Model[Saved XGBoost pipeline]
+    FastAPI --> Model[Model from local file or Hugging Face]
     Model --> FastAPI
     FastAPI --> Browser
     Hosting[Local host or TODO deployed host] --> FastAPI
@@ -67,7 +67,7 @@ The target column is `Type-2 Diabetic`. The target counts are 225 rows labelled 
 
 ## The model
 
-The saved model is `model/best_pipeline_XGBoost.joblib`. Its pipeline selects the nine numeric fields, imputes numeric missing values with the median, standardises numeric values, applies SMOTETomek sampling, and uses an XGBoost classifier.
+The saved pipeline is `model/best_pipeline_XGBoost.joblib`. It is hosted at [Hugging Face](https://huggingface.co/cyrusnx/type2_diabetes_xgboost) with revision `v1`. Its pipeline selects the nine numeric fields, imputes numeric missing values with the median, standardises numeric values, applies SMOTETomek sampling, and uses an XGBoost classifier.
 
 ## Results
 
@@ -160,6 +160,8 @@ Install the application dependencies:
 python -m pip install -r requirements.txt
 ```
 
+When the local model file is missing, the application downloads it automatically on first start from Hugging Face. An internet connection is needed for that first run.
+
 Train the model only when the saved model is not available:
 
 ```powershell
@@ -237,11 +239,28 @@ TYPE_2_DIABETES_PREDICTION
 * The test results come from one stratified split and do not establish performance in a new population.
 * Future work could document the source, add external validation, compare additional models, calibrate confidence, and add tests for the API and interface.
 
+## Development
+
+Install the development tools:
+
+```powershell
+python -m pip install -r requirements_dev.txt
+```
+
+Run Ruff:
+
+```powershell
+ruff check apps tests
+```
+
+Run the tests:
+
+```powershell
+pytest
+```
+
 ## Licence and author
 
 Licence: TODO:
 
 Author: Cyrus Ndung'u, GitHub [Cyrusz55](https://github.com/Cyrusz55), portfolio [cyrusz55.github.io](https://cyrusz55.github.io).
-
-
-

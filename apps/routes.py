@@ -1,20 +1,17 @@
-from fastapi import APIRouter, HTTPException
 import os
+
 import joblib
 import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 from apps.schemas import (
-    DiabetesInput,
-    PredictionResponse,
     BatchDiabetesInput,
     BatchPredictionResponse,
+    DiabetesInput,
+    PredictionResponse,
 )
-
-from machine_learning.machine_learning import (
-    load_model,
-    predict_diabetes,
-    NUM_COLS,
-)
+from apps.model_loader import get_model, model_loaded
+from machine_learning.machine_learning import NUM_COLS, predict_diabetes
 
 router = APIRouter()
 
@@ -45,13 +42,22 @@ def _to_frame(payload: dict) -> pd.DataFrame:
 
 @router.get("/health")
 def health_check():
-    return {"status": "ok", "message": "API is healthy"}
+    return {
+        "status": "ok",
+        "message": "API is healthy",
+        "model_loaded": model_loaded(),
+    }
 
 
 @router.post("/predict", response_model=PredictionResponse)
 def predict(patient: DiabetesInput):
     try:
-        model = load_model()
+        model = get_model()
+        if model is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Model is not loaded. Check the model file or Hugging Face connection.",
+            )
         new_data = _to_frame(patient.model_dump())
 
         prediction = int(predict_diabetes(model, new_data)[0])
@@ -63,6 +69,8 @@ def predict(patient: DiabetesInput):
             status_code=503,
             detail="Model not yet trained. Run training first.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -71,7 +79,12 @@ def predict(patient: DiabetesInput):
 def predict_batch(payload: BatchDiabetesInput):
     """Score many patients in one call (used by the CSV-upload path)."""
     try:
-        model = load_model()
+        model = get_model()
+        if model is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Model is not loaded. Check the model file or Hugging Face connection.",
+            )
         frame = pd.DataFrame(
             [_to_frame(p.model_dump()).iloc[0] for p in payload.patients]
         )[NUM_COLS]
@@ -92,6 +105,8 @@ def predict_batch(payload: BatchDiabetesInput):
             status_code=503,
             detail="Model not yet trained. Run training first.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

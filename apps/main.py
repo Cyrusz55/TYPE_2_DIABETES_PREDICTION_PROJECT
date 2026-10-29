@@ -18,20 +18,23 @@ Note:
     same FastAPI app at "/". No second process, no npm, no CORS preflight.
 """
 import os
+from contextlib import asynccontextmanager
 
-import pandas as pd  # noqa: F401  (left available, mirroring the smart-grid main.py)
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from apps.routes import router
-
-from scheduler import start_scheduler
-
-from machine_learning.machine_learning import train_model  # noqa: F401  (scheduler uses it)
+from apps.model_loader import load_model
 
 load_dotenv()
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    load_model()
+    yield
+
 
 app = FastAPI(
     title="Type 2 Diabetes Prediction API",
@@ -40,6 +43,7 @@ app = FastAPI(
         "already-trained XGBoost pipeline."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # ---------------------------------------------------------------------------
@@ -65,32 +69,6 @@ app.add_middleware(
 
 # Mount the endpoint router under the /api/v1 prefix.
 app.include_router(router, prefix="/api/v1")
-
-
-@app.on_event("startup")
-def startup_event():
-    """
-    Ensure the model file exists when the API starts.
-
-    The model is trained and stored locally, so we just verify it is present.
-    If it is missing, we load it now (so the first /predict request does not
-    trigger a slow, unexpected load).
-    """
-    from apps.model_loader import load_model
-
-    os.makedirs("model", exist_ok=True)
-
-    try:
-        load_model()  # loads model/best_pipeline_XGBoost.joblib into the cache
-        print("[startup] Model loaded and cached.")
-    except FileNotFoundError as e:
-        print(f"[startup] WARNING: model not available: {e}")
-        print("[startup] Run machine_learning/machine_learning.py to produce "
-              "model/best_pipeline_XGBoost.joblib, then restart the API.")
-    except Exception as e:
-        print(f"[startup] Could not load model: {e}")
-
-    start_scheduler()
 
 
 @app.get("/")

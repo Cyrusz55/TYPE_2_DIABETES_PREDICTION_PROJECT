@@ -10,29 +10,29 @@ class DiabetesInput(BaseModel):
     """
 
     no_of_pregnancy: int = Field(
-        3, ge=0, le=20, description="Number of pregnancies"
+        ..., ge=0, le=20, description="Number of pregnancies"
     )
-    age: int = Field(50, ge=1, le=120, description="Age in years")
+    age: int = Field(..., ge=1, le=120, description="Age in years")
     bmi: float = Field(
-        22.26376185, ge=10.0, le=70.0, description="Body mass index"
+        ..., ge=10.0, le=70.0, description="Body mass index"
     )
     bp_systolic: int = Field(
-        140, ge=50, le=260, description="Systolic blood pressure (mm Hg)"
+        ..., ge=50, le=260, description="Systolic blood pressure (mm Hg)"
     )
     bp_diastolic: int = Field(
-        90, ge=30, le=160, description="Diastolic blood pressure (mm Hg)"
+        ..., ge=30, le=160, description="Diastolic blood pressure (mm Hg)"
     )
     diabetes_pedigree_function: float = Field(
-        0.0, ge=0.0, le=3.0, description="Diabetes pedigree function (family history score)"
+        ..., ge=0.0, le=3.0, description="Diabetes pedigree function (family history score)"
     )
     insulin: float = Field(
-        0.0, ge=0.0, le=2000.0, description="Serum insulin (mu U/ml)"
+        ..., ge=0.0, le=2000.0, description="Serum insulin (mu U/ml)"
     )
     skin_thickness_mm: float = Field(
-        317.5, ge=0.0, le=600.0, description="Triceps skin fold thickness (mm)"
+        ..., ge=0.0, le=600.0, description="Triceps skin fold thickness (mm)"
     )
     glucose: float = Field(
-        146, ge=0, le=400, description="Plasma glucose concentration (mg/dl)"
+        ..., ge=0, le=400, description="Plasma glucose concentration (mg/dl)"
     )
 
 

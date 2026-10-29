@@ -1,0 +1,45 @@
+name: Continuous integration
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install application requirements
+        run: python -m pip install -r requirements.txt
+
+      - name: Install development requirements
+        run: python -m pip install -r requirements_dev.txt
+
+      - name: Cache Hugging Face model
+        uses: actions/cache@v4
+        with:
+          path: model/huggingface
+          key: ${{ runner.os }}-huggingface-v1
+
+      - name: Run Ruff
+        run: ruff check apps tests
+
+      - name: Run tests
+        run: pytest

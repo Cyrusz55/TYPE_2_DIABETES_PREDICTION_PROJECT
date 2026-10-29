@@ -33,7 +33,7 @@ jobs:
         run: python -m pip install -r requirements_dev.txt
 
       - name: Cache Hugging Face model
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: model/huggingface
           key: ${{ runner.os }}-huggingface-v1

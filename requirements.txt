@@ -22,7 +22,7 @@ SQLAlchemy==2.0.44
 psycopg2-binary==2.9.11
 
 # --- model cache fallback (machine_learning.load_model) ---
-huggingface-hub==1.3.4
+huggingface-hub==2.3.0
 
 # --- frontend ---
 # frontend/index.html is a single static file served by FastAPI at "/".
